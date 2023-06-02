@@ -14,9 +14,9 @@ class ViewPagerAdapter(fm:FragmentManager, lifecycle:Lifecycle, var tabCount: In
     override fun createFragment(position: Int): Fragment {
         return when(position){
             0->CheckListFragment()
-            1->TravelListFragment()
+            1->TravelListParentFragment()
             2->DairyFragment()
-            else->TravelListFragment()
+            else->TravelListParentFragment()
         }
     }
 }
