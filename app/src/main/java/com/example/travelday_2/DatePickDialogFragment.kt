@@ -56,7 +56,7 @@ class DatePickDialogFragment : Fragment() {
             val newFragment=TravelListFragment().apply {
                 arguments=bundle
             }
-            activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.fragment_container,newFragment)?.addToBackStack(null)?.commit()
+            activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.viewPager2,newFragment)?.addToBackStack(null)?.commit()
         }
 
     }

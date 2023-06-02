@@ -76,7 +76,7 @@ class TravelListFragment : Fragment() {
                     arguments=bundle
                 }
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container,newFragment).commit()
+                    .replace(R.id.viewPager2,newFragment).commit()
             } else {
                 countryEditText.error = "국가 이름을 입력하세요"
             }
@@ -96,7 +96,7 @@ class TravelListFragment : Fragment() {
                     arguments=bundle
                 }
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container,newFragment).commit()
+                    .replace(R.id.viewPager2,newFragment).commit()
 
             }
         }
