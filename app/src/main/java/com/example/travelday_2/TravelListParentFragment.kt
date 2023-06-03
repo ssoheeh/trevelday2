@@ -30,7 +30,6 @@ class TravelListParentFragment : Fragment() {
         val travelAdd = TraveladdFragment()
             childFragmentManager.beginTransaction()
                 .replace(R.id.frag_container, travelAdd)
-                .addToBackStack(null)
                 .commit()
         }
 
