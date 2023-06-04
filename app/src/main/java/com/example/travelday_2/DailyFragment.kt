@@ -22,10 +22,7 @@ class DailyFragment : Fragment() {
     var dailyList: ArrayList<DailyItem> = ArrayList()
     lateinit var adapter:DailyScheduleAdapter
     private val sharedViewModel: SharedViewModel by activityViewModels()
-    override fun onResume() {
-        super.onResume()
-        adapter.notifyDataSetChanged()
-    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,8 +35,24 @@ class DailyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
+        sharedViewModel.countryList.observe(viewLifecycleOwner) { countryList ->
+            updateRecyclerView()
+        }
+        initBackStack()
 
+    }
+    private fun initBackStack() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현
+                parentFragmentManager.popBackStack()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
 
+    private fun updateRecyclerView() {
+        adapter.notifyDataSetChanged()
     }
 
 
@@ -91,7 +104,8 @@ class DailyFragment : Fragment() {
                 arguments=bundle
             }
             parentFragmentManager.beginTransaction().apply{
-                add(R.id.frag_container,dailyAddFragment)
+                add(R.id.frag_container, dailyAddFragment)
+                hide(this@DailyFragment)
                 addToBackStack(null)
                 commit()
             }

@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,9 +35,18 @@ class TraveladdFragment : Fragment() {
         initRecyclerView()
         initButton()
         setBundle()
+        initBackStack()
     }
 
-
+    private fun initBackStack() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현
+                parentFragmentManager.popBackStack()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
 
 
     private fun calculateDday(date: Date): Int {
@@ -97,8 +107,9 @@ class TraveladdFragment : Fragment() {
                     arguments = bundle
                 }
                 parentFragmentManager.beginTransaction().apply {
+
+                    add(R.id.frag_container, dateListFragment)
                     hide(this@TraveladdFragment)
-                    show(dateListFragment)
                     addToBackStack(null)
                     commit()
                 }

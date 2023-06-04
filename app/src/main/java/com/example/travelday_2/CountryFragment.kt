@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.DialogFragment
 import java.util.Date
 
@@ -25,6 +26,23 @@ class CountryFragment : DialogFragment() {
         showCountryInputDialog()
         return super.onCreateView(inflater, container, savedInstanceState)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initBackStack()
+
+    }
+
+        private fun initBackStack() {
+            val callback = object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현
+                    parentFragmentManager.popBackStack()
+                }
+            }
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        }
+
 
 
     private fun showCountryInputDialog() {
@@ -51,7 +69,8 @@ class CountryFragment : DialogFragment() {
                 val datePickDialogFragment=DatePickDialogFragment()
                 datePickDialogFragment.arguments = bundle
                 parentFragmentManager.beginTransaction().apply {
-                    replace(R.id.frag_container,datePickDialogFragment)
+                    add(R.id.frag_container,datePickDialogFragment)
+                    hide(this@CountryFragment)
                     addToBackStack(null)
                     commit()
                 }

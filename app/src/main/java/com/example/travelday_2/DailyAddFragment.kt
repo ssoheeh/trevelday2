@@ -53,7 +53,7 @@ class DailyAddFragment : Fragment() {
             builder.setView(dialogView)
 
             builder.setPositiveButton("OK") { _, _ ->
-                val msg = "You selected $selectedHour:${String.format("%02d", selectedMinute)}, Task: ${taskEditText.text}"
+                val msg = "$selectedHour:${String.format("%02d", selectedMinute)} ${taskEditText.text} 추가되었습니다"
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 val task = taskEditText.text.toString()
                 val selectedCountry = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country

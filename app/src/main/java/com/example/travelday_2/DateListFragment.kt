@@ -29,8 +29,17 @@ class DateListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
+        initBackStack()
     }
-
+    private fun initBackStack() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현
+                parentFragmentManager.popBackStack()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
 
 
 
@@ -56,7 +65,8 @@ class DateListFragment : Fragment() {
                             arguments=bundle
                         }
                         parentFragmentManager.beginTransaction().apply {
-                            add(R.id.frag_container,dailyFragment )
+                            add(R.id.frag_container, dailyFragment)
+                            hide(this@DateListFragment)
                             addToBackStack(null)
                             commit()
                         }
