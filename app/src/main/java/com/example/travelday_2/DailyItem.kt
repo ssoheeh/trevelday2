@@ -1,5 +1,5 @@
 package com.example.travelday_2
 
-data class DailyItem(var hour:String, var activity:String) {
+data class DailyItem(var hour:Int, var activity:String):java.io.Serializable {
 
 }

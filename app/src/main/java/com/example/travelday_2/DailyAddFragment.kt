@@ -4,17 +4,23 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.text.TextUtils.replace
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.travelday_2.databinding.FragmentDailyAddBinding
 import java.util.*
 
 class DailyAddFragment : Fragment() {
     lateinit var binding: FragmentDailyAddBinding
-
+    val sharedViewModel: SharedViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,36 +33,51 @@ class DailyAddFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initLayout()
-        }
-    @SuppressLint("MissingInflatedId")
+
+    }
+
+
+
     private fun initLayout() {
-            // Custom Dialog 생성
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        val timeSetListener = TimePickerDialog.OnTimeSetListener { _, selectedHour, selectedMinute ->
             val builder = AlertDialog.Builder(context)
-            val inflater = this.layoutInflater
+            val inflater = LayoutInflater.from(context)
             val dialogView = inflater.inflate(R.layout.fragment_daily_add, null)
 
-            // NumberPicker에 24시간 설정
-            val np = dialogView.findViewById<NumberPicker>(R.id.hourPicker)
-            np.maxValue = 23
-            np.minValue = 0
-
-            // EditText 찾기
             val taskEditText = dialogView.findViewById<EditText>(R.id.taskEditText)
 
-            // NumberPicker 현재 시간으로 초기화
-            val calendar = Calendar.getInstance()
-            val hour = calendar.get(Calendar.HOUR_OF_DAY)
-            np.value = hour
-
-            // AlertDialog Builder 사용
             builder.setView(dialogView)
+
             builder.setPositiveButton("OK") { _, _ ->
-                val msg = "You selected ${np.value}:00, Task: ${taskEditText.text}"
+                val msg = "You selected $selectedHour:${String.format("%02d", selectedMinute)}, Task: ${taskEditText.text}"
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                val task = taskEditText.text.toString()
+                val selectedCountry = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
+                val selectedDate = arguments?.getSerializable("클릭된 날짜") as SharedViewModel.Date
+                val countryList = sharedViewModel.countryList.value
+                val countryIndex = countryList?.indexOf(selectedCountry)
+                val dateIndex = selectedCountry.dateList.indexOf(selectedDate)
+                if (countryIndex != null && dateIndex != -1) {
+                    sharedViewModel.addDailySchedule(countryIndex, dateIndex, selectedHour, selectedMinute, task)
+                }
+                parentFragmentManager.popBackStack()
             }
+
             builder.setNegativeButton("Cancel", null)
             builder.show()
         }
+
+        val timePickerDialog = TimePickerDialog(context, timeSetListener, hour, minute, true)
+        timePickerDialog.show()
+    }
+
+
 }
+
+
 
 

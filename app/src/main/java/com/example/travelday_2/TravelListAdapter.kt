@@ -2,22 +2,22 @@ package com.example.travelday
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.example.travelday_2.TravelListItem
+import com.example.travelday_2.SharedViewModel
 import com.example.travelday_2.databinding.TravelListRowBinding
 
 
-class TravelListAdapter(val items:ArrayList<TravelListItem>) :RecyclerView.Adapter<TravelListAdapter.ViewHolder>() {
+class TravelListAdapter(val items: ArrayList<SharedViewModel.Country>) :RecyclerView.Adapter<TravelListAdapter.ViewHolder>() {
 
     interface OnItemClickListener{
-        fun OnItemClick(data:TravelListItem)
+        fun OnItemClick(data: SharedViewModel.Country)
     }
     var itemClickListener:OnItemClickListener?=null
     inner class ViewHolder(val binding: TravelListRowBinding) : RecyclerView.ViewHolder(binding.root){
         init{
             binding.textView.setOnClickListener{
                 itemClickListener?.OnItemClick(items[adapterPosition])
-
             }
 
         }
@@ -44,7 +44,16 @@ class TravelListAdapter(val items:ArrayList<TravelListItem>) :RecyclerView.Adapt
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        holder.binding.textView.text = item.country + "\n" + item.startDate + " ~ " + item.endDate
-
+        val startDate = item.dateList.firstOrNull()?.date
+        val endDate = item.dateList.lastOrNull()?.date
+        val travelPeriod = if (startDate != null && endDate != null) {
+            "$startDate ~ $endDate"
+        } else {
+            ""
+        }
+        holder.binding.textView.text = item.name +"\n" +travelPeriod
     }
+
+
+
 }

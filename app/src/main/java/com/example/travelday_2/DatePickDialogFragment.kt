@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.example.travelday_2.databinding.FragmentDatePickDialogBinding
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
@@ -16,6 +17,8 @@ import java.util.*
 
 class DatePickDialogFragment : Fragment() {
     lateinit var binding:FragmentDatePickDialogBinding
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,8 +53,7 @@ class DatePickDialogFragment : Fragment() {
         )
 
         dateRangePicker.addOnPositiveButtonClickListener { dateSelected ->
-            if (selectedCountry != null) {
-            }
+
             val startDate = dateSelected.first
             val endDate = dateSelected.second
             val bundle=Bundle().apply {
@@ -67,6 +69,7 @@ class DatePickDialogFragment : Fragment() {
                 addToBackStack(null)
                 commit()
             }
+
         }
 
     }

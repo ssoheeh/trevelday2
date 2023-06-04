@@ -8,11 +8,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DateListAdapter(val items: ArrayList<DateListItem>) :
+class DateListAdapter(val items: ArrayList<SharedViewModel.Date>) :
     RecyclerView.Adapter<DateListAdapter.ViewHolder>() {
 
     interface OnItemClickListener {
-        fun onItemClick(data: DateListItem)
+        fun onItemClick(data: SharedViewModel.Date)
     }
 
     var itemClickListener: OnItemClickListener? = null
@@ -38,9 +38,8 @@ class DateListAdapter(val items: ArrayList<DateListItem>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        val format = SimpleDateFormat("MM.dd", Locale.getDefault())
-        val formattedDate = format.format(item.date)
-        holder.binding.dateTextView.text = formattedDate
+        val dayNumber=position+1
+        holder.binding.dateTextView.text = "Day $dayNumber  " + item.date
 
 
 

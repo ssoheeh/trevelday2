@@ -2,6 +2,7 @@ package com.example.travelday_2
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.example.travelday_2.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
@@ -11,13 +12,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding:ActivityMainBinding
     lateinit var tabLayout:TabLayout
     lateinit var viewPager:ViewPager2
+    private val sharedViewModel: SharedViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setTabLayout()
     }
-
     private fun setTabLayout() {
         val tabCount=3
         val viewPagerAdapter=ViewPagerAdapter(supportFragmentManager, lifecycle, tabCount)

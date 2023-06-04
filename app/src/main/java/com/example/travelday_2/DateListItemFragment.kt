@@ -1,5 +1,6 @@
 package com.example.travelday_2
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.travelday.TravelListAdapter
 import com.example.travelday_2.databinding.FragmentDateListItemBinding
@@ -19,7 +21,7 @@ import java.util.*
 class DateListItemFragment : Fragment() {
     lateinit var binding:FragmentDateListItemBinding
     lateinit var adapter: DateListAdapter
-    var dateList:ArrayList<DateListItem> = ArrayList()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,7 +33,7 @@ class DateListItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getTraveldata()
+        initRecyclerView()
         initBackStack()
     }
 
@@ -48,21 +50,26 @@ class DateListItemFragment : Fragment() {
     }
 
 
-    private fun getTraveldata() {
+    @SuppressLint("SuspiciousIndentation")
+    private fun initRecyclerView() {
 
-            var selectedTravelItem :TravelListItem?= arguments?.getSerializable("여행 클래스") as TravelListItem
-            if (selectedTravelItem != null) {
-                val startDate = convertStringToDate(selectedTravelItem.startDate!!)
-                val endDate = convertStringToDate(selectedTravelItem.endDate!!)
-                getDatesBetween(startDate, endDate)
-                adapter = DateListAdapter(dateList)
+        val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
+        if (country != null) {
+                adapter = DateListAdapter(country.dateList)
                 binding.recyclerView.adapter = adapter
                 binding.recyclerView.layoutManager = LinearLayoutManager(context,
-                    LinearLayoutManager.VERTICAL,false)
+                    LinearLayoutManager.VERTICAL,false)}
 
                 adapter.itemClickListener=object:DateListAdapter.OnItemClickListener{
-                    override fun onItemClick(data: DateListItem) {
-                        val dailyFragment=DailyFragment()
+                    override fun onItemClick(data: SharedViewModel.Date) {
+
+                        val bundle = Bundle().apply {
+                            putSerializable("클릭된 국가", country)
+                            putSerializable("클릭된 날짜", data)
+                        }
+                        val dailyFragment=DailyFragment().apply {
+                            arguments=bundle
+                        }
                         parentFragmentManager.beginTransaction().apply {
                             replace(R.id.frag_container,dailyFragment )
                             addToBackStack(null)
@@ -71,26 +78,8 @@ class DateListItemFragment : Fragment() {
                     }
                 }
 
-            }
-        }
-
-        private fun convertStringToDate(dateString: String): Date {
-            val format = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
-            return format.parse(dateString) ?: Date()
-        }
-
-        private fun getDatesBetween(startDate: Date, endDate: Date) {
-            val dates = mutableListOf<Date>()
-            val calendar = Calendar.getInstance()
-            calendar.time = startDate
-
-            while (calendar.time.before(endDate)|| calendar.time.equals(endDate)) {
-                val result = calendar.time
-                dateList.add(DateListItem(result))
-                calendar.add(Calendar.DATE, 1)
-            }
-
 
         }
+
 }
 
