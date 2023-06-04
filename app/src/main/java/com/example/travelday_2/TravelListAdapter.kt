@@ -52,6 +52,7 @@ class TravelListAdapter(val items: ArrayList<SharedViewModel.Country>) :Recycler
             ""
         }
         holder.binding.textView.text = item.name +"\n" +travelPeriod
+        holder.binding.dDay.text="D-"+item.dDay
     }
 
 

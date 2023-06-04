@@ -6,6 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.travelday_2.databinding.DailyListRowBinding
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class DailyScheduleAdapter(var dailyList:ArrayList<SharedViewModel.DailySchedule>) : RecyclerView.Adapter<DailyScheduleAdapter.ViewHolder>() {
 
@@ -42,16 +45,10 @@ class DailyScheduleAdapter(var dailyList:ArrayList<SharedViewModel.DailySchedule
 
     override fun onBindViewHolder(holder: DailyScheduleAdapter.ViewHolder, position: Int) {
         val item = dailyList[position]
-        holder.binding.timeTextView.text = item.hour.toString() +":"+item.minute.toString()
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault()) //00:00 방식으로 시간표기
+        val time = timeFormat.format(Date().apply { hours = item.hour; minutes = item.minute })
+        holder.binding.timeTextView.text = time
         holder.binding.scheduleTextView.text = item.task
-        if (item.task.isNotBlank()) {
-            holder.binding.scheduleTextView.setBackgroundResource(R.drawable.task_background_filled)
-        } else {
-            // Otherwise, use the default background.
-            holder.binding.scheduleTextView.setBackgroundResource(R.drawable.task_background_default)
-        }
-
-
     }
 
     override fun getItemCount(): Int {

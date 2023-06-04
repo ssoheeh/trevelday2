@@ -1,7 +1,6 @@
 package com.example.travelday_2
 
 import android.os.Bundle
-import android.text.TextUtils.replace
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,6 +20,7 @@ class TraveladdFragment : Fragment() {
     lateinit var binding:FragmentTraveladdBinding
     lateinit var adapter: TravelListAdapter
     private val sharedViewModel: SharedViewModel by activityViewModels()
+    private val currentDate: Date = Date()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,8 +38,15 @@ class TraveladdFragment : Fragment() {
 
 
 
+
+    private fun calculateDday(date: Date): Int {
+        val currentDate = Calendar.getInstance().apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0) }.time
+        val diff = date.time - currentDate.time
+        return (diff / (24 * 60 * 60 * 1000)).toInt()
+    }
     private fun setBundle() {
         val startDate = arguments?.getString("startDate")
+
         val endDate = arguments?.getString("endDate")
         val selectedCountry = arguments?.getString("country")
 
@@ -53,6 +60,8 @@ class TraveladdFragment : Fragment() {
             val startDateObj = convertStringToDate(startDate)
             val endDateObj = convertStringToDate(endDate)
             getDatesBetween(startDateObj, endDateObj, selectedCountryIndex)
+            val dDay= calculateDday(startDateObj).toString()
+            sharedViewModel.addDDay(selectedCountryIndex,dDay)
         }
         adapter.notifyDataSetChanged()
         }
@@ -84,12 +93,13 @@ class TraveladdFragment : Fragment() {
                 val bundle = Bundle().apply {
                     putSerializable("클릭된 국가", sharedViewModel.countryList.value?.get(selectedCountryIndex))
                 }
-                val dateListFragment = DateListItemFragment().apply {
+                val dateListFragment = DateListFragment().apply {
                     arguments = bundle
                 }
                 parentFragmentManager.beginTransaction().apply {
-                    replace(R.id.frag_container, dateListFragment)
-                    addToBackStack("travelList")
+                    hide(this@TraveladdFragment)
+                    show(dateListFragment)
+                    addToBackStack(null)
                     commit()
                 }
             }}

@@ -11,6 +11,8 @@ class SharedViewModel : ViewModel() {
     // 중첩 클래스로 데이터 구조 정의
     data class Country(val name: String) : Serializable {
         val dateList = arrayListOf<Date>()
+        var dDay:String = ""
+
     }
 
     data class Date(val date: String): Serializable {
@@ -65,6 +67,14 @@ class SharedViewModel : ViewModel() {
                 // Insert the new DailySchedule object at the insertion index
                 date.dailyScheduleList.add(insertionIndex, DailySchedule(hour, minute, task))
             }
+        }
+        _countryList.value = updatedList
+    }
+    fun addDDay(countryIndex: Int, dDay: String) {
+        val updatedList = countryList.value ?: arrayListOf()
+        if (countryIndex in 0 until updatedList.size) {
+            val country = updatedList[countryIndex]
+            country.dDay = dDay
         }
         _countryList.value = updatedList
     }

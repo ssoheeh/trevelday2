@@ -38,23 +38,10 @@ class DailyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
-        initBackStack()
+
 
     }
 
-
-
-    private fun initBackStack() {
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (parentFragmentManager.backStackEntryCount > 0) {
-                    parentFragmentManager.popBackStack()
-                } else {
-                    requireActivity().finish()
-                }
-            }
-        })
-    }
 
     private fun initRecyclerView() {
         var selectedCountry= arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
@@ -70,6 +57,9 @@ class DailyFragment : Fragment() {
             binding.scheduleRecyclerView.adapter = adapter
             binding.scheduleRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }
+        //제목 바 설정
+
+        binding.dateTextView.text=selectedDate.date
         //move 와 remove 기능 추가
         val simpleCallback=object: ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT){
@@ -101,7 +91,7 @@ class DailyFragment : Fragment() {
                 arguments=bundle
             }
             parentFragmentManager.beginTransaction().apply{
-                replace(R.id.frag_container,dailyAddFragment)
+                add(R.id.frag_container,dailyAddFragment)
                 addToBackStack(null)
                 commit()
             }

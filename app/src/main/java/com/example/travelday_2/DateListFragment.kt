@@ -1,25 +1,20 @@
 package com.example.travelday_2
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.travelday.TravelListAdapter
-import com.example.travelday_2.databinding.FragmentDateListItemBinding
-import java.text.SimpleDateFormat
+import com.example.travelday_2.databinding.FragmentDateListBinding
 import java.util.*
 
 
-class DateListItemFragment : Fragment() {
-    lateinit var binding:FragmentDateListItemBinding
+class DateListFragment : Fragment() {
+    lateinit var binding:FragmentDateListBinding
     lateinit var adapter: DateListAdapter
     private val sharedViewModel: SharedViewModel by activityViewModels()
     override fun onCreateView(
@@ -27,30 +22,20 @@ class DateListItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding= FragmentDateListItemBinding.inflate(layoutInflater)
+        binding= FragmentDateListBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
-        initBackStack()
-    }
-
-    private fun initBackStack() {
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (parentFragmentManager.backStackEntryCount > 0) {
-                    parentFragmentManager.popBackStack()
-                } else {
-                    requireActivity().finish()
-                }
-            }
-        })
     }
 
 
-    @SuppressLint("SuspiciousIndentation")
+
+
+
+    @SuppressLint("SuspiciousIndentation", "SetTextI18n")
     private fun initRecyclerView() {
 
         val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
@@ -71,13 +56,22 @@ class DateListItemFragment : Fragment() {
                             arguments=bundle
                         }
                         parentFragmentManager.beginTransaction().apply {
-                            replace(R.id.frag_container,dailyFragment )
+                            add(R.id.frag_container,dailyFragment )
                             addToBackStack(null)
                             commit()
                         }
                     }
                 }
-
+        //국가이름, 날짜 데이터 및 디데이 표시
+        val startDate = country.dateList.firstOrNull()?.date
+        val endDate = country.dateList.lastOrNull()?.date
+        val travelPeriod = if (startDate != null && endDate != null) {
+            "$startDate ~ $endDate"
+        } else {
+            ""
+        }
+        binding.travelData.text=country.name +"\n " +travelPeriod
+        binding.dDayDateList.text="D-"+country.dDay
 
         }
 
