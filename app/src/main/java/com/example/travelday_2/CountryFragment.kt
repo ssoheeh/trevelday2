@@ -29,19 +29,9 @@ class CountryFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initBackStack()
 
     }
 
-        private fun initBackStack() {
-            val callback = object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현
-                    parentFragmentManager.popBackStack()
-                }
-            }
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-        }
 
 
 
@@ -54,7 +44,7 @@ class CountryFragment : DialogFragment() {
             .setTitle("여행할 국가")
             .setPositiveButton("저장", null)
             .setNegativeButton("취소") { dialog, _ ->
-                dialog.dismiss()
+                dialog.cancel()
             }
 
         val dialog = dialogBuilder.create()
@@ -71,15 +61,18 @@ class CountryFragment : DialogFragment() {
                 parentFragmentManager.beginTransaction().apply {
                     add(R.id.frag_container,datePickDialogFragment)
                     hide(this@CountryFragment)
-                    addToBackStack(null)
                     commit()
                 }
                 dialog.dismiss()
+                dialog.setOnCancelListener(null)
 
 
             } else {
                 countryEditText.error = "국가 이름을 입력하세요"
             }
         }
+        //dialog 창이 닫힐 시 입력받을 때까지 다시 뜨게 구현
+        dialog.setOnCancelListener { showCountryInputDialog() }
+
     }
 }

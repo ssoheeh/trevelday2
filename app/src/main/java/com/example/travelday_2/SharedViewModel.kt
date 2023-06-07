@@ -9,7 +9,7 @@ import kotlin.collections.ArrayList
 
 class SharedViewModel : ViewModel() {
     // 중첩 클래스로 데이터 구조 정의
-    data class Country(val name: String) : Serializable {
+    data class Country(val name: String, ) : Serializable {
         val dateList = arrayListOf<Date>()
         var dDay:String = ""
 

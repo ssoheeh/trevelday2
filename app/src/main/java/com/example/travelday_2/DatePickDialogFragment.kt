@@ -3,6 +3,8 @@ package com.example.travelday_2
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -78,10 +80,15 @@ class DatePickDialogFragment : Fragment() {
                 add(R.id.frag_container,traveladdFragment)
                 hide(this@DatePickDialogFragment)
                 show(traveladdFragment)
-                addToBackStack(null)
                 commit()
             }
 
+        }
+        //dialog 창이 취소버튼으로 닫힐 시 입력받을 때까지 다시 뜨게 구현
+        dateRangePicker.addOnNegativeButtonClickListener {
+            Handler(Looper.getMainLooper()).postDelayed({
+                showDataRangePicker()
+            }, 500) // Wait for 500 milliseconds
         }
 
     }

@@ -27,6 +27,17 @@ class DateListAdapter(val items: ArrayList<SharedViewModel.Date>) :
         }
     }
 
+
+    fun moveItem(oldPos:Int, newPos:Int){
+        val item = items[oldPos]
+        items.removeAt(oldPos)
+        items.add(newPos,item)
+        notifyItemMoved(oldPos, newPos)
+    }
+    fun removeItem(pos:Int){
+        items.removeAt(pos)
+        notifyItemRemoved(pos)
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = DateListRowBinding.inflate(inflater, parent, false)
@@ -39,7 +50,7 @@ class DateListAdapter(val items: ArrayList<SharedViewModel.Date>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         val dayNumber=position+1
-        holder.binding.dateTextView.text = "Day $dayNumber  " + item.date
+        holder.binding.dateTextView.text = item.date
 
 
 

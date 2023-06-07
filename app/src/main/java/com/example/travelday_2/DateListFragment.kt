@@ -8,7 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.travelday_2.databinding.FragmentDateListBinding
 import java.util.*
 
@@ -83,7 +85,34 @@ class DateListFragment : Fragment() {
         binding.travelData.text=country.name +"\n " +travelPeriod
         binding.dDayDateList.text="D-"+country.dDay
 
+
+
+        //remove, move 기능 추가
+        val simpleCallback=object: ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT){
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                adapter.moveItem(viewHolder.adapterPosition, target.adapterPosition)
+
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                adapter.removeItem(viewHolder.adapterPosition)
+            }
+
+        }
+        val itemTouchHelper= ItemTouchHelper(simpleCallback)
+        itemTouchHelper.attachToRecyclerView(binding.recyclerView)
         }
 
+
+
+
 }
+
+
 

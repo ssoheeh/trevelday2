@@ -31,7 +31,7 @@ class TravelListParentFragment : Fragment() {
     fun initLayout() {
         val travelAdd = TraveladdFragment()
             childFragmentManager.beginTransaction()
-                .replace(R.id.frag_container, travelAdd)
+                .add(R.id.frag_container, travelAdd)
                 .commit()
         }
 

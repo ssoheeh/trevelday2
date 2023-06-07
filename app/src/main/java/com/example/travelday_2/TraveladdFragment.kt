@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -35,17 +36,6 @@ class TraveladdFragment : Fragment() {
         initRecyclerView()
         initButton()
         setBundle()
-        initBackStack()
-    }
-
-    private fun initBackStack() {
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현
-                parentFragmentManager.popBackStack()
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
 
@@ -82,8 +72,8 @@ class TraveladdFragment : Fragment() {
         binding.addTripButton.setOnClickListener {
             val CountryFragment=CountryFragment()
             parentFragmentManager.beginTransaction().apply{
-                replace(R.id.frag_container,CountryFragment)
-                addToBackStack(null)
+                add(R.id.frag_container,CountryFragment)
+                hide(this@TraveladdFragment)
                 commit()
             }
         }
