@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.travelday_2.databinding.DailyListRowBinding
 import java.text.SimpleDateFormat
@@ -26,6 +27,8 @@ class DailyScheduleAdapter(var dailyList:ArrayList<SharedViewModel.DailySchedule
         }
 
     }
+
+
     fun moveItem(oldPos:Int, newPos:Int){
         val item = dailyList[oldPos]
         dailyList.removeAt(oldPos)

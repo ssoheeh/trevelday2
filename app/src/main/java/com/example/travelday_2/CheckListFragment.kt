@@ -19,13 +19,9 @@ class CheckListFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupData()
     }
-
     private fun setupData() {
         binding.label.text = "체크리스트"
     }
-
-
 }

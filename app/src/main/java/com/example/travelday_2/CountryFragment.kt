@@ -31,10 +31,6 @@ class CountryFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
     }
-
-
-
-
     private fun showCountryInputDialog() {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.fragment_country, null)
         countryEditText = dialogView.findViewById(R.id.countryEditText)
@@ -65,14 +61,11 @@ class CountryFragment : DialogFragment() {
                 }
                 dialog.dismiss()
                 dialog.setOnCancelListener(null)
-
-
             } else {
                 countryEditText.error = "국가 이름을 입력하세요"
             }
         }
         //dialog 창이 닫힐 시 입력받을 때까지 다시 뜨게 구현
         dialog.setOnCancelListener { showCountryInputDialog() }
-
     }
 }

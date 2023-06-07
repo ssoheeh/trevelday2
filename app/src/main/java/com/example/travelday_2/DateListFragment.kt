@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
@@ -27,54 +28,51 @@ class DateListFragment : Fragment() {
         binding= FragmentDateListBinding.inflate(layoutInflater)
         return binding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         initBackStack()
+        //관찰
+        sharedViewModel.countryList.observe(viewLifecycleOwner) { countryList ->
+            adapter.notifyDataSetChanged()
+        }
     }
+    // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현
     private fun initBackStack() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현
                 parentFragmentManager.popBackStack()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
-
-
-
     @SuppressLint("SuspiciousIndentation", "SetTextI18n")
     private fun initRecyclerView() {
-
         val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
         if (country != null) {
-                adapter = DateListAdapter(country.dateList)
+                adapter = DateListAdapter(requireContext(), country.dateList)
                 binding.recyclerView.adapter = adapter
                 binding.recyclerView.layoutManager = LinearLayoutManager(context,
                     LinearLayoutManager.VERTICAL,false)}
-
                 adapter.itemClickListener=object:DateListAdapter.OnItemClickListener{
                     override fun onItemClick(data: SharedViewModel.Date) {
-
                         val bundle = Bundle().apply {
                             putSerializable("클릭된 국가", country)
                             putSerializable("클릭된 날짜", data)
                         }
-                        val dailyFragment=DailyFragment().apply {
+                        val dailyAddFragment=DailyAddFragment().apply {
                             arguments=bundle
                         }
                         parentFragmentManager.beginTransaction().apply {
-                            add(R.id.frag_container, dailyFragment)
+                            add(R.id.frag_container, dailyAddFragment)
                             hide(this@DateListFragment)
                             addToBackStack(null)
                             commit()
                         }
                     }
                 }
-        //국가이름, 날짜 데이터 및 디데이 표시
+        //상단 탭에 국가이름, 날짜 데이터 및 디데이 표시
         val startDate = country.dateList.firstOrNull()?.date
         val endDate = country.dateList.lastOrNull()?.date
         val travelPeriod = if (startDate != null && endDate != null) {
@@ -85,9 +83,7 @@ class DateListFragment : Fragment() {
         binding.travelData.text=country.name +"\n " +travelPeriod
         binding.dDayDateList.text="D-"+country.dDay
 
-
-
-        //remove, move 기능 추가
+       // swipe 시 remove기능 구현
         val simpleCallback=object: ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT){
             override fun onMove(
@@ -96,22 +92,15 @@ class DateListFragment : Fragment() {
                 target: RecyclerView.ViewHolder
             ): Boolean {
                 adapter.moveItem(viewHolder.adapterPosition, target.adapterPosition)
-
                 return true
             }
-
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 adapter.removeItem(viewHolder.adapterPosition)
             }
-
         }
         val itemTouchHelper= ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(binding.recyclerView)
-        }
-
-
-
-
+    }
 }
 
 

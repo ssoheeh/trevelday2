@@ -104,7 +104,7 @@ class TraveladdFragment : Fragment() {
                     commit()
                 }
             }}
-        //remove, move 기능 추가
+        //remove, move 기능 구현
             val simpleCallback=object: ItemTouchHelper.SimpleCallback(
                 ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT){
                 override fun onMove(
@@ -120,15 +120,10 @@ class TraveladdFragment : Fragment() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     adapter.removeItem(viewHolder.adapterPosition)
                 }
-
             }
             val itemTouchHelper= ItemTouchHelper(simpleCallback)
             itemTouchHelper.attachToRecyclerView(binding.recyclerView)
-
-
             }
-
-
     private fun convertStringToDate(dateString: String): Date {
         val format = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
         return format.parse(dateString) ?: Date()
@@ -146,7 +141,5 @@ class TraveladdFragment : Fragment() {
             sharedViewModel.addDate(selectedCountryIndex, formattedDate)
             calendar.add(Calendar.DATE, 1)
         }
-
-
     }
 }
