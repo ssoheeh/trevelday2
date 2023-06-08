@@ -31,8 +31,6 @@ class DatePickDialogFragment : Fragment() {
         return binding.root
     }
 
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showDataRangePicker()
@@ -92,8 +90,6 @@ class DatePickDialogFragment : Fragment() {
         }
 
     }
-
-
     private fun convertLongToTime(time: Long): String {
         val date = Date(time)
         val format = SimpleDateFormat(

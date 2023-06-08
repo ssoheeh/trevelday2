@@ -27,8 +27,6 @@ class DailyScheduleAdapter(var dailyList:ArrayList<SharedViewModel.DailySchedule
         }
 
     }
-
-
     fun moveItem(oldPos:Int, newPos:Int){
         val item = dailyList[oldPos]
         dailyList.removeAt(oldPos)

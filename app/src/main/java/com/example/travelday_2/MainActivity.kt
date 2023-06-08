@@ -21,12 +21,6 @@ class MainActivity : AppCompatActivity() {
         setTabLayout()
 
     }
-
-
-
-
-
-
     private fun setTabLayout() {
         val tabCount=3
         val viewPagerAdapter=ViewPagerAdapter(supportFragmentManager, lifecycle, tabCount)
@@ -36,7 +30,6 @@ class MainActivity : AppCompatActivity() {
                 0->tab.text="준비물"
                 1->tab.text="일정"
                 2->tab.text="여행기"
-
         }
     }.attach()
 }}
