@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             when(position){
                 0->tab.text="준비물"
                 1->tab.text="일정"
-                2->tab.text="여행기"
+                2->tab.text="커뮤니티"
         }
     }.attach()
 }}

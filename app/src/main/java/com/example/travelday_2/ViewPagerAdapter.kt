@@ -15,7 +15,7 @@ class ViewPagerAdapter(fm:FragmentManager, lifecycle:Lifecycle, var tabCount: In
         return when(position){
             0->CheckListFragment()
             1->TravelListParentFragment()
-            2->DairyFragment()
+            2->CommunityParentFragment()
             else->TravelListParentFragment()
         }
     }
