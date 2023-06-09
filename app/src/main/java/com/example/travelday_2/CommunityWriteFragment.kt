@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import com.example.travelday_2.databinding.FragmentCommunityWriteBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -26,7 +27,9 @@ class CommunityWriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLayout()
+        initBackStack()
     }
+
     fun initLayout(){
         binding.writeBtn.setOnClickListener {
             val title = binding.titleArea.text.toString()
@@ -53,6 +56,15 @@ class CommunityWriteFragment : Fragment() {
         val dateFormat =
             SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.KOREA).format(currentDateTime)
         return dateFormat
+    }
+
+    private fun initBackStack() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                parentFragmentManager.popBackStack()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 }
 
