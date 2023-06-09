@@ -43,7 +43,7 @@ class CommunityWriteFragment : Fragment() {
             // setValue() 메서드를 사용하여 값을 저장한다.
             FBRef.contentRef
                 .child(key)
-                .setValue(CommunityContent(title, content, time))
+                .setValue(CommunityPost(title, content, time))
 
             Toast.makeText(context, "게시글 입력 완료", Toast.LENGTH_SHORT).show()
             parentFragmentManager.popBackStack()

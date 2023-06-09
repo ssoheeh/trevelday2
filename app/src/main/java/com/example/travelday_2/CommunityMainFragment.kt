@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.travelday_2.databinding.FragmentCommunityMainBinding
 import com.google.firebase.database.DataSnapshot
@@ -17,7 +16,8 @@ import com.google.firebase.database.ValueEventListener
 class CommunityMainFragment : Fragment() {
     lateinit var binding: FragmentCommunityMainBinding
     lateinit var contentAdapter: CommunityContentAdapter
-    private val contentList = mutableListOf<CommunityContent>()
+    private val contentList = mutableListOf<CommunityPost>()
+    private val keysList = mutableListOf<String>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,7 +33,7 @@ class CommunityMainFragment : Fragment() {
     }
 
     private fun initLayout() {
-        contentAdapter = CommunityContentAdapter(contentList)
+        contentAdapter = CommunityContentAdapter(contentList,keysList)
         // RecyclerView의 adapter에 ContentAdapter를 설정한다.
         binding.recyclerview.adapter = contentAdapter
         // layoutManager 설정
@@ -52,9 +52,19 @@ class CommunityMainFragment : Fragment() {
         }
 
         contentAdapter.itemClickListener = object:CommunityContentAdapter.OnItemClickListener{
-            override fun OnItemClick(data: CommunityContent) {
-                Toast.makeText(context,data.content,Toast.LENGTH_SHORT).show()
+            override fun OnItemClick(data: CommunityPost, key: String) { // key added here
+                parentFragmentManager.beginTransaction().apply {
+                    val communityItemFragment = CommunityItemFragment().apply {
+                        arguments = Bundle().apply {
+                            putString("key", key) // Pass the key to CommunityItemFragment
+                        }
+                    }
+                    add(R.id.frag_container_community, communityItemFragment)
+                    hide(this@CommunityMainFragment)
+                    addToBackStack(null)
+                    commit()
                 }
+            }
         }
 
         // 데이터베이스에서 데이터 읽어오기
@@ -67,12 +77,14 @@ class CommunityMainFragment : Fragment() {
                 contentList.clear()
 
                 for (data in snapshot.children) {
-                    val item = data.getValue(CommunityContent::class.java)
+                    val item = data.getValue(CommunityPost::class.java)
                     Log.d("ContentListActivity", "item: ${item}")
                     // 리스트에 읽어 온 데이터를 넣어준다.
                     contentList.add(item!!)
+                    keysList.add(data.key!!)
                 }
                 contentList.reverse()
+                keysList.reverse()
                 // notifyDataSetChanged()를 호출하여 adapter에게 값이 변경 되었음을 알려준다.
                 contentAdapter.notifyDataSetChanged()
             }

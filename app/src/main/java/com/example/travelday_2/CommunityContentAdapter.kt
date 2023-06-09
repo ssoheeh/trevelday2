@@ -1,18 +1,16 @@
 package com.example.travelday_2
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.travelday_2.databinding.CommunityListRowBinding
-import com.example.travelday_2.databinding.DailyListRowBinding
 
-class CommunityContentAdapter(val items: MutableList<CommunityContent>) :
+class CommunityContentAdapter(val items: MutableList<CommunityPost>,val keys: MutableList<String>
+) :
     RecyclerView.Adapter<CommunityContentAdapter.ViewHolder>() {
 
     interface OnItemClickListener{
-        fun OnItemClick(data:CommunityContent)
+        fun OnItemClick(data:CommunityPost, key:String)
     }
     var itemClickListener: CommunityContentAdapter.OnItemClickListener?=null
 
@@ -30,7 +28,7 @@ class CommunityContentAdapter(val items: MutableList<CommunityContent>) :
     }
 
     inner class ViewHolder(val binding:CommunityListRowBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bindItems(items: CommunityContent) {
+        fun bindItems(items: CommunityPost) {
 
             binding.titleArea.text = items.title
             binding.contentArea.text = items.content
@@ -39,7 +37,7 @@ class CommunityContentAdapter(val items: MutableList<CommunityContent>) :
         }
         init{
             itemView.setOnClickListener{
-                itemClickListener?.OnItemClick(items[adapterPosition])
+                itemClickListener?.OnItemClick(items[adapterPosition],keys[adapterPosition])
 
             }
         }
