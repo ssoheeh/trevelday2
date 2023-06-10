@@ -88,7 +88,7 @@ class CommunityMainFragment : Fragment() {
             }
         }
         // addValueEventListener() 메서드로 DatabaseReference에 ValueEventListener를 추가
-        FBRef.contentRef.addValueEventListener(postListener)
+        DBRef.contentRef.addValueEventListener(postListener)
     }
 
 

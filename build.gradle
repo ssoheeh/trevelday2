@@ -8,6 +8,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // 이 부분을 수정했습니다.
     }
     repositories {
+        google()
         mavenCentral()
     }
 }

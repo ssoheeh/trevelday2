@@ -6,7 +6,7 @@ data class CommunityPost(
     val content: String = "",
     val time: String = "",
     val likeList: MutableList<String> = mutableListOf(),
-    val imageUrls: MutableList<String> = mutableListOf(),
+    val imageUrl: String="",
     val comments: MutableMap<String, Comment> = mutableMapOf()
 )
 

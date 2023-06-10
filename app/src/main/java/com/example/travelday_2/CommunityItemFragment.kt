@@ -1,7 +1,6 @@
 package com.example.travelday_2
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +8,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.travelday_2.databinding.FragmentCommunityItemBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.values
 
 
 class CommunityItemFragment : Fragment() {
@@ -39,7 +40,7 @@ class CommunityItemFragment : Fragment() {
     private fun initLikeCount() {
         val postKey = arguments?.getString("key")
         if (postKey != null) {
-            val postRef = FBRef.contentRef.child(postKey)
+            val postRef = DBRef.contentRef.child(postKey)
             // ValueEventListener를 설정하여 likeList에 변화가 생길 때마다 UI를 업데이트합니다.
             postRef.child("likeList").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -58,7 +59,7 @@ class CommunityItemFragment : Fragment() {
     private fun initCommentCount() {
         val postKey = arguments?.getString("key")
         if (postKey != null) {
-            val postRef = FBRef.contentRef.child(postKey)
+            val postRef = DBRef.contentRef.child(postKey)
             // ValueEventListener를 설정하여 likeList에 변화가 생길 때마다 UI를 업데이트합니다.
             postRef.child("comments").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -73,11 +74,46 @@ class CommunityItemFragment : Fragment() {
         }
     }
     private fun initLayout() {
-        val key = arguments?.getString("key")
         commentAdapter = CommentAdapter(commentList)
         binding.commentRecyclerView.adapter = commentAdapter
         binding.commentRecyclerView.layoutManager = LinearLayoutManager(context,
             LinearLayoutManager.VERTICAL,false)
+
+
+        val key = arguments?.getString("key")
+        //글 작성자, 내용 데이터 세팅
+        val postRef = key?.let { DBRef.contentRef.child(it) }
+
+        postRef?.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // CommunityPost 객체로 데이터를 변환
+                val post = snapshot.getValue(CommunityPost::class.java)
+                // 데이터 바인딩
+                binding.usernameItem.text = post?.userId
+                //binding.titleItem.text = post?.title 제목 추가시 변경
+                binding.contentItem.text = post?.content
+                binding.timeItem.text = post?.time
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Log a message or handle the error.
+            }
+        })
+
+        //이미지 데이터 세팅
+        val imageRef = key?.let { DBRef.contentRef.child(it).child("imageUrl") }
+
+        imageRef?.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val imageUrl = snapshot.getValue(String::class.java)
+                Glide.with(this@CommunityItemFragment).load(imageUrl).into(binding.photo)
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Log a message or handle the error.
+            }
+        })
 
         getCommentData() //댓글  업데이트
 
@@ -89,7 +125,7 @@ class CommunityItemFragment : Fragment() {
             val postKey = arguments?.getString("key")
 
             if (postKey != null) {
-                val postRef = FBRef.contentRef.child(postKey)
+                val postRef = DBRef.contentRef.child(postKey)
                 postRef.child("likeList").addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val likeList = snapshot.value as? MutableList<String> ?: mutableListOf()
@@ -150,7 +186,7 @@ class CommunityItemFragment : Fragment() {
             override fun onCancelled(error: DatabaseError) {
             }
         }
-        FBRef.contentRef.child(postKey).addValueEventListener(postListener)
+        DBRef.contentRef.child(postKey).addValueEventListener(postListener)
     }
 
     private fun initBackStack() {

@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import com.example.travelday_2.databinding.FragmentCommentWriteBinding
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
@@ -50,10 +49,10 @@ class CommentWriteFragment : Fragment() {
             val comment = Comment(email, commentText, time)
 
             // 새로운 댓글의 key 값을 생성
-            val commentKey = FBRef.contentRef.child(postKey).child("comments").push().key.toString()
+            val commentKey = DBRef.contentRef.child(postKey).child("comments").push().key.toString()
 
             // 생성한 key 값의 위치에 댓글 데이터를 저장
-            FBRef.contentRef
+            DBRef.contentRef
                 .child(postKey)
                 .child("comments")
                 .child(commentKey)
