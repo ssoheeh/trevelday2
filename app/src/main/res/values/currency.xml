@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="currency_list">
+        <item>KRW 대한민국 원</item>
+        <item>USD 미국 달러</item>
+        <item>EUR 유로</item>
+
+
+    </string-array>
+</resources>

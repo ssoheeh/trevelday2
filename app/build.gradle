@@ -43,6 +43,9 @@ dependencies{
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-auth-ktx'
 
+    //환율 api 가져오기 위해
+    implementation 'com.google.code.gson:gson:2.8.5'
+    
     implementation 'com.google.firebase:firebase-database-ktx:20.2.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.core:core-ktx:1.10.1'
