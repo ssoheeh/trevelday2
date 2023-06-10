@@ -21,7 +21,7 @@ class SharedViewModel : ViewModel() {
 
     data class DailySchedule(val hour: Int, val minute: Int,val task: String): Serializable
 
-    // 데이터 저장
+
     val _countryList = MutableLiveData<ArrayList<Country>>()
     val countryList: LiveData<ArrayList<Country>>
         get() = _countryList
@@ -30,13 +30,14 @@ class SharedViewModel : ViewModel() {
         _countryList.value = arrayListOf()
     }
 
-    // 데이터 추가 메서드
+    //데이터 추가 메소드
+    //국가
     fun addCountry(name: String) {
         val updatedList = countryList.value ?: arrayListOf()
         updatedList.add(Country(name))
         _countryList.value = updatedList
     }
-
+    //날짜
     fun addDate(countryIndex: Int, date: String) {
         val updatedList = countryList.value ?: arrayListOf()
         if (countryIndex in 0 until updatedList.size) {
@@ -45,6 +46,7 @@ class SharedViewModel : ViewModel() {
         }
         _countryList.value = updatedList
     }
+    //일일 일정
     fun addDailySchedule(countryIndex: Int, dateIndex: Int, hour: Int, minute: Int, task: String) {
         val updatedList = countryList.value ?: arrayListOf()
         if (countryIndex in 0 until updatedList.size) {
@@ -52,7 +54,6 @@ class SharedViewModel : ViewModel() {
             if (dateIndex in 0 until country.dateList.size) {
                 val date = country.dateList[dateIndex]
 
-                // Find the insertion index based on the hour and minute values
                 var insertionIndex = 0
                 for (index in 0 until date.dailyScheduleList.size) {
                     val schedule = date.dailyScheduleList[index]
@@ -63,12 +64,12 @@ class SharedViewModel : ViewModel() {
                     insertionIndex = index + 1
                 }
 
-                // Insert the new DailySchedule object at the insertion index
                 date.dailyScheduleList.add(insertionIndex, DailySchedule(hour, minute, task))
             }
         }
         _countryList.value = updatedList
     }
+    //디데이 추가
     fun addDDay(countryIndex: Int, dDay: String) {
         val updatedList = countryList.value ?: arrayListOf()
         if (countryIndex in 0 until updatedList.size) {

@@ -1,17 +1,12 @@
 package com.example.travelday_2
 
 import android.app.AlertDialog
-import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.DialogFragment
-import java.util.Date
 
 
 class CountryFragment : DialogFragment() {
@@ -27,10 +22,7 @@ class CountryFragment : DialogFragment() {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
+    //이 함수는 국가 선택창을 띄우고 입력값을 받아 달력 창으로 이동시킨다.
     private fun showCountryInputDialog() {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.fragment_country, null)
         countryEditText = dialogView.findViewById(R.id.countryEditText)

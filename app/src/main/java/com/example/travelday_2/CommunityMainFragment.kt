@@ -34,13 +34,9 @@ class CommunityMainFragment : Fragment() {
 
     private fun initLayout() {
         contentAdapter = CommunityContentAdapter(contentList,keysList)
-        // RecyclerView의 adapter에 ContentAdapter를 설정한다.
         binding.recyclerview.adapter = contentAdapter
-        // layoutManager 설정
-        // LinearLayoutManager을 사용하여 수직으로 아이템을 배치한다.
         binding.recyclerview.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
 
-        // 글쓰기 버튼을 클릭 했을 경우 ContentWriteActivity로 이동한다.
         binding.contentWriteBtn.setOnClickListener {
             parentFragmentManager.beginTransaction().apply {
                 val communityWriteFragment=CommunityWriteFragment()
@@ -85,14 +81,13 @@ class CommunityMainFragment : Fragment() {
                 }
                 contentList.reverse()
                 keysList.reverse()
-                // notifyDataSetChanged()를 호출하여 adapter에게 값이 변경 되었음을 알려준다.
                 contentAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
             }
         }
-        // addValueEventListener() 메서드로 DatabaseReference에 ValueEventListener를 추가한다.
+        // addValueEventListener() 메서드로 DatabaseReference에 ValueEventListener를 추가
         FBRef.contentRef.addValueEventListener(postListener)
     }
 

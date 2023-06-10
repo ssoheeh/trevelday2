@@ -33,7 +33,8 @@ class CommunityWriteFragment : Fragment() {
 
     fun initLayout(){
         binding.writeBtn.setOnClickListener {
-            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "Anonymous"
+            val user = FirebaseAuth.getInstance().currentUser
+            val userId = user?.email ?: "Anonymous"
             val title = binding.titleArea.text.toString()
             val content = binding.contentArea.text.toString()
             val time = getTime()

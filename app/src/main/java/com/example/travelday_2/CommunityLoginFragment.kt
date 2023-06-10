@@ -30,19 +30,18 @@ class CommunityLoginFragment : Fragment() {
     }
 
     private fun initLayout() {
-        // Initialize Firebase Auth
+        // Firebase Auth 초기화
         auth = Firebase.auth
 
-        // Setup click listener for the login button
         binding.loginButton.setOnClickListener {
             val email = binding.emailField.text.toString()
             val password = binding.passwordField.text.toString()
 
-            // Sign in with email and password
+            // 로그인
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        // Sign in success
+                        // 로그인 성공
                         val user = auth.currentUser
                         Log.i("유저이름",user.toString())
                         Toast.makeText(context,"로그인이 완료되었습니다",Toast.LENGTH_SHORT).show()
@@ -55,7 +54,7 @@ class CommunityLoginFragment : Fragment() {
                         }
 
                     } else {
-                        // If sign in fails, display a message to the user.
+                        // 로그인 실패
                         Toast.makeText(context,"유효하지 않는 계정입니다",Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -65,15 +64,15 @@ class CommunityLoginFragment : Fragment() {
             val email = binding.emailField.text.toString()
             val password = binding.passwordField.text.toString()
 
-            // Create user with email and password
+            // 회원가입
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        // Sign up success
+                        // 회원가입 성공
                         val user = auth.currentUser
                         Toast.makeText(context,"회원가입이 완료되었습니다",Toast.LENGTH_SHORT).show()
                     } else {
-                        // If sign up fails, display a message to the user.
+                        // 회원가입 실패
                         Toast.makeText(context,"회원가입에 실패하였습니다",Toast.LENGTH_SHORT).show()                    }
                 }
         }
