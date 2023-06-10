@@ -30,6 +30,7 @@ class DateListFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        init()
         initRecyclerView()
         initBackStack()
         //관찰
@@ -37,6 +38,30 @@ class DateListFragment : Fragment() {
             adapter.notifyDataSetChanged()
         }
     }
+    //환율 버튼과 날씨 버튼 눌렀을 때 구현
+    private fun init(){
+        binding.weatherLayout.setOnClickListener {
+
+        }
+        binding.exchangeLayout.setOnClickListener {
+            val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
+            val bundle = Bundle().apply {
+                putSerializable("클릭된 국가", country)
+
+            }
+
+            val exchangeFragment=ExchangeRateFragment().apply {
+                arguments=bundle
+            }
+            parentFragmentManager.beginTransaction().apply {
+                add(R.id.frag_container, exchangeFragment)
+                hide(this@DateListFragment)
+                addToBackStack(null)
+                commit()
+            }
+        }
+    }
+
     // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현
     private fun initBackStack() {
         val callback = object : OnBackPressedCallback(true) {

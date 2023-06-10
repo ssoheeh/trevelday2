@@ -3,6 +3,7 @@ buildscript {
         kotlin_version = '1.8.0' // 이 부분을 수정했습니다.
     }
     dependencies {
+
         classpath 'com.google.gms:google-services:4.3.14'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // 이 부분을 수정했습니다.
     }
