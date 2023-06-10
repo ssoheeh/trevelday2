@@ -43,10 +43,11 @@ class CommentWriteFragment : Fragment() {
             }
 
             // 현재 로그인한 사용자의 아이디를 가져옵니다.
-            val author = FirebaseAuth.getInstance().currentUser?.uid ?: "Anonymous"
+            val user = FirebaseAuth.getInstance().currentUser
+            val email = user?.email ?: "Anonymous"
 
             // Comment 객체를 생성합니다.
-            val comment = Comment(author, commentText, time)
+            val comment = Comment(email, commentText, time)
 
             // 새로운 댓글의 key 값을 생성합니다.
             val commentKey = FBRef.contentRef.child(postKey).child("comments").push().key.toString()

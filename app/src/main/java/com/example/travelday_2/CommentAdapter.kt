@@ -20,7 +20,6 @@ class CommentAdapter(val items: MutableList<Comment>) :
         return ViewHolder(view)
     }
 
-    // 생성된 View Holder에 데이터를 바인딩 해주는 메서드
     override fun onBindViewHolder(holder: CommentAdapter.ViewHolder, position: Int) {
         holder.bindItems(items[position])
     }
@@ -31,7 +30,7 @@ class CommentAdapter(val items: MutableList<Comment>) :
     inner class ViewHolder(val binding:CommentListRowBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bindItems(items: Comment) {
 
-            binding.username.text = items.author
+            binding.username.text = items.userId
             binding.content.text = items.content
             binding.time.text = items.time
 

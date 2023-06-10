@@ -1,17 +1,18 @@
 buildscript {
     ext {
-        kotlin_version = '1.9.0-Beta'
+        kotlin_version = '1.8.0' // 이 부분을 수정했습니다.
     }
     dependencies {
         classpath 'com.google.gms:google-services:4.3.14'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.22"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // 이 부분을 수정했습니다.
     }
     repositories {
         mavenCentral()
     }
-}// Top-level build file where you can add configuration options common to all sub-projects/modules.
+}
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id 'com.android.application' version '8.0.2' apply false
-    id 'com.android.library' version '8.0.2' apply false
-    id 'org.jetbrains.kotlin.android' version '1.9.0-Beta' apply false
+    id 'com.android.application' version '7.4.2' apply false
+    id 'com.android.library' version '7.4.2' apply false
+    id 'org.jetbrains.kotlin.android' version '1.8.0' apply false // 이 부분을 수정했습니다.
 }

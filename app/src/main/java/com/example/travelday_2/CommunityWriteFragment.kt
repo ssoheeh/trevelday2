@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.example.travelday_2.databinding.FragmentCommunityWriteBinding
+import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -32,6 +33,7 @@ class CommunityWriteFragment : Fragment() {
 
     fun initLayout(){
         binding.writeBtn.setOnClickListener {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "Anonymous"
             val title = binding.titleArea.text.toString()
             val content = binding.contentArea.text.toString()
             val time = getTime()
@@ -43,7 +45,7 @@ class CommunityWriteFragment : Fragment() {
             // setValue() 메서드를 사용하여 값을 저장한다.
             FBRef.contentRef
                 .child(key)
-                .setValue(CommunityPost(title, content, time))
+                .setValue(CommunityPost(userId,title, content, time))
 
             Toast.makeText(context, "게시글 입력 완료", Toast.LENGTH_SHORT).show()
             parentFragmentManager.popBackStack()
