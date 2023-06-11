@@ -22,9 +22,10 @@
         <ImageButton
             android:id="@+id/likeButton"
             android:layout_width="50dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="3dp"
-            android:src="@android:drawable/star_big_off" />
+            android:backgroundTint="#FFFFFF"
+            android:src="@drawable/baseline_thumb_up_24" />
 
         <TextView
             android:id="@+id/likeCount"
@@ -36,9 +37,10 @@
         <ImageButton
             android:id="@+id/commentButton"
             android:layout_width="50dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginEnd="0dp"
-            android:src="@android:drawable/ic_menu_edit" />
+            android:backgroundTint="#FFFFFF"
+            android:src="@drawable/baseline_comment_24" />
 
         <TextView
             android:id="@+id/commentCount"
@@ -53,7 +55,7 @@
     <LinearLayout
         android:id="@+id/linearLayout8"
         android:layout_width="401dp"
-        android:layout_height="131dp"
+        android:layout_height="100dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
         app:layout_constraintEnd_toEndOf="parent"
@@ -86,8 +88,8 @@
 
         <TextView
             android:id="@+id/contentItem"
-            android:layout_width="401dp"
-            android:layout_height="76dp"
+            android:layout_width="389dp"
+            android:layout_height="53dp"
             android:layout_margin="5dp"
             android:textColor="@color/black"
             android:textSize="14sp" />

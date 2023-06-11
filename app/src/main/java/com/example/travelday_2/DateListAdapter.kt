@@ -1,5 +1,6 @@
 package com.example.travelday_2
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,6 +9,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.travelday_2.databinding.DateListRowBinding
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.TextStyle
+import java.time.temporal.ChronoField
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -49,10 +55,25 @@ class DateListAdapter(val context: Context, val items: ArrayList<SharedViewModel
     override fun getItemCount(): Int {
         return items.size    }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         holder.bind(item)
-        holder.binding.dateTextView.text = "• " + item.date
+        // 문자열 날짜를 LocalDate로 변환
+        val formatter = DateTimeFormatterBuilder()
+            .appendPattern("MM.dd")
+            .parseDefaulting(ChronoField.YEAR, LocalDate.now().year.toLong())
+            .toFormatter()
+        val date = LocalDate.parse(item.date, formatter)
+
+        // 요일 이름 얻기
+        val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+
+        // 요일 이름의 첫 글자만 추출
+        val firstLetterOfDay = dayOfWeek[0]
+
+        // 날짜와 요일을 출력
+        holder.binding.dateTextView.text = "•${item.date} ($firstLetterOfDay)"
     }
 }
 
