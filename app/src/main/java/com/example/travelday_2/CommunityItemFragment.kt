@@ -106,8 +106,10 @@ class CommunityItemFragment : Fragment() {
         imageRef?.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val imageUrl = snapshot.getValue(String::class.java)
-                Glide.with(this@CommunityItemFragment).load(imageUrl).into(binding.photo)
-
+                Glide.with(this@CommunityItemFragment)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.placeholder)
+                    .into(binding.photo)
             }
 
             override fun onCancelled(error: DatabaseError) {
