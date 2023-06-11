@@ -6,8 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class TraveladdFragment : Fragment() {
+class TravelListFragment : Fragment() {
     lateinit var binding:FragmentTraveladdBinding
     lateinit var adapter: TravelListAdapter
     private val sharedViewModel: SharedViewModel by activityViewModels()
@@ -73,7 +71,7 @@ class TraveladdFragment : Fragment() {
             val CountryFragment=CountryFragment()
             parentFragmentManager.beginTransaction().apply{
                 add(R.id.frag_container,CountryFragment)
-                hide(this@TraveladdFragment)
+                hide(this@TravelListFragment)
                 commit()
             }
         }
@@ -99,7 +97,7 @@ class TraveladdFragment : Fragment() {
                 parentFragmentManager.beginTransaction().apply {
 
                     add(R.id.frag_container, dateListFragment)
-                    hide(this@TraveladdFragment)
+                    hide(this@TravelListFragment)
                     addToBackStack(null)
                     commit()
                 }

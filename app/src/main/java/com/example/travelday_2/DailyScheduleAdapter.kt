@@ -1,5 +1,6 @@
 package com.example.travelday_2
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -50,6 +51,7 @@ class DailyScheduleAdapter(var dailyList:ArrayList<SharedViewModel.DailySchedule
         val time = timeFormat.format(Date().apply { hours = item.hour; minutes = item.minute })
         holder.binding.timeTextView.text = time
         holder.binding.scheduleTextView.text = item.task
+        holder.binding.colorView.setBackgroundColor(Color.parseColor(item.color))
     }
 
     override fun getItemCount(): Int {

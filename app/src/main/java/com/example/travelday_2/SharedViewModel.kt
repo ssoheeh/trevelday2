@@ -19,7 +19,7 @@ class SharedViewModel : ViewModel() {
         val dailyScheduleList = arrayListOf<DailySchedule>()
     }
 
-    data class DailySchedule(val hour: Int, val minute: Int,val task: String): Serializable
+    data class DailySchedule(val hour: Int, val minute: Int,val task: String, var color:String): Serializable
 
 
     val _countryList = MutableLiveData<ArrayList<Country>>()
@@ -47,7 +47,7 @@ class SharedViewModel : ViewModel() {
         _countryList.value = updatedList
     }
     //일일 일정
-    fun addDailySchedule(countryIndex: Int, dateIndex: Int, hour: Int, minute: Int, task: String) {
+    fun addDailySchedule(countryIndex: Int, dateIndex: Int, hour: Int, minute: Int, task: String, color:String) {
         val updatedList = countryList.value ?: arrayListOf()
         if (countryIndex in 0 until updatedList.size) {
             val country = updatedList[countryIndex]
@@ -64,7 +64,7 @@ class SharedViewModel : ViewModel() {
                     insertionIndex = index + 1
                 }
 
-                date.dailyScheduleList.add(insertionIndex, DailySchedule(hour, minute, task))
+                date.dailyScheduleList.add(insertionIndex, DailySchedule(hour, minute, task, color))
             }
         }
         _countryList.value = updatedList
@@ -78,6 +78,12 @@ class SharedViewModel : ViewModel() {
         }
         _countryList.value = updatedList
     }
+
+    // 일정 수 반환 (색상 설정)
+    fun getScheduleCount(countryIndex: Int, dateIndex: Int): Int {
+        return countryList.value?.get(countryIndex)?.dateList?.get(dateIndex)?.dailyScheduleList?.size ?: 0
+    }
+
 }
 
 

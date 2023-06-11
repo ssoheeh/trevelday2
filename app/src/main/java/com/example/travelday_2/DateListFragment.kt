@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
@@ -13,7 +12,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.travelday_2.databinding.FragmentDateListBinding
-import java.util.*
 
 
 class DateListFragment : Fragment() {
@@ -86,11 +84,11 @@ class DateListFragment : Fragment() {
                             putSerializable("클릭된 국가", country)
                             putSerializable("클릭된 날짜", data)
                         }
-                        val dailyAddFragment=DailyAddFragment().apply {
+                        val dailyScheduleAddFragment=DailyScheduleAddFragment().apply {
                             arguments=bundle
                         }
                         parentFragmentManager.beginTransaction().apply {
-                            add(R.id.frag_container, dailyAddFragment)
+                            add(R.id.frag_container, dailyScheduleAddFragment)
                             hide(this@DateListFragment)
                             addToBackStack(null)
                             commit()

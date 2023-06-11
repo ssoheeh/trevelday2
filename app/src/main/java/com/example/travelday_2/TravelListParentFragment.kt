@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import com.example.travelday_2.databinding.FragmentTravellistParentBinding
 
 
@@ -27,9 +26,9 @@ class TravelListParentFragment : Fragment() {
 
     @SuppressLint("SuspiciousIndentation")
     fun initLayout() {
-        val travelAdd = TraveladdFragment()
+        val travelList = TravelListFragment()
             childFragmentManager.beginTransaction()
-                .add(R.id.frag_container, travelAdd)
+                .add(R.id.frag_container, travelList)
                 .commit()
         }
     }
