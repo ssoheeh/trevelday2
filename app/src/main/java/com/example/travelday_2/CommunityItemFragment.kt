@@ -90,7 +90,7 @@ class CommunityItemFragment : Fragment() {
                 val post = snapshot.getValue(CommunityPost::class.java)
                 // 데이터 바인딩
                 binding.usernameItem.text = post?.userId
-                //binding.titleItem.text = post?.title 제목 추가시 변경
+                binding.titleItem.text = post?.title
                 binding.contentItem.text = post?.content
                 binding.timeItem.text = post?.time
             }
@@ -108,7 +108,7 @@ class CommunityItemFragment : Fragment() {
                 val imageUrl = snapshot.getValue(String::class.java)
                 Glide.with(this@CommunityItemFragment)
                     .load(imageUrl)
-                    .placeholder(R.drawable.placeholder)
+                    .placeholder(R.drawable.travelday2)
                     .into(binding.photo)
             }
 
