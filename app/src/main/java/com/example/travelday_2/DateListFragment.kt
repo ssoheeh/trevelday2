@@ -1,7 +1,9 @@
 package com.example.travelday_2
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,13 +13,31 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.travelday_2.databinding.FragmentDateListBinding
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 class DateListFragment : Fragment() {
     lateinit var binding:FragmentDateListBinding
     lateinit var adapter: DateListAdapter
     private val sharedViewModel: SharedViewModel by activityViewModels()
+    lateinit var result :String
+    val scope = CoroutineScope(Dispatchers.IO)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,6 +48,7 @@ class DateListFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getWeather()
         init()
         initRecyclerView()
         initBackStack()
@@ -38,8 +59,11 @@ class DateListFragment : Fragment() {
     }
     //환율 버튼과 날씨 버튼 눌렀을 때 구현
     private fun init(){
+        result  = "weather"
         binding.weatherLayout.setOnClickListener {
 
+
+                showWeatherDialog()
         }
         binding.exchangeLayout.setOnClickListener {
             val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
@@ -58,6 +82,61 @@ class DateListFragment : Fragment() {
                 commit()
             }
         }
+    }
+
+    private fun getWeather(){
+        val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
+        val requestQueue = Volley.newRequestQueue(requireContext())
+        val url = "http://api.openweathermap.org/data/2.5/weather?q="+country.name+"&appid="+"d74c3bbee7a3c497383271ff0d494542"
+
+        val stringRequest = StringRequest(
+            Request.Method.GET,url,
+            {
+                    response ->
+                val jsonObject = JSONObject(response)
+
+                val weatherJson = jsonObject.getJSONArray("weather")
+                val weatherObj = weatherJson.getJSONObject(0)
+
+                var weather = weatherObj.getString("description")
+                //val imgURL = "http://openweathermap.org/img/w/" + weatherObj.getString("icon") + ".png"
+                //Glide.with(this).load(imgURL).into(findViewById<ImageView>(R.id.weatherIcon))
+                val tempK = JSONObject(jsonObject.getString("main"))
+                val tempDo = (Math.round((tempK.getDouble("temp")-273.15)*100)/100.0)
+                weather = weather + tempDo + "°C"
+                //binding.result.text = weather
+                result = weather
+
+            },
+            {
+                Log.i("weahter",it.message.toString())
+                result = "error"
+            })
+
+        requestQueue.add(stringRequest)
+    }
+
+    //weather dialog
+    private fun showWeatherDialog() {
+        getWeather()
+        //val dialogView = LayoutInflater.from(context).inflate(R.layout.fragment_date_list, null)
+
+        val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
+
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+
+            .setTitle(country.name)
+            .setMessage(result)
+            .setPositiveButton("확인", null)
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.cancel()
+            }
+
+        val dialog = dialogBuilder.create()
+        dialog.show()
+
+
+
     }
 
     // 뒤로가기 버튼이 눌렸을 때 처리할 동작 구현

@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException
 
 
 class ExchangeRateFragment : Fragment() {
+
     lateinit var binding:FragmentExchangeRateBinding
     private val currencyList = arrayOf("KRW", "USD", "EUR", "CAD")
     private lateinit var et_from: TextView
