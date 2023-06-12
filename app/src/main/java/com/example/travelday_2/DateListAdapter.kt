@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,8 @@ class DateListAdapter(val context: Context, val items: ArrayList<SharedViewModel
     RecyclerView.Adapter<DateListAdapter.ViewHolder>() {
     interface OnItemClickListener {
         fun onItemClick(data: SharedViewModel.Date)
+
+        fun onOutfitClick(data:SharedViewModel.Date)
     }
     var itemClickListener: OnItemClickListener? = null
 
@@ -35,7 +38,18 @@ class DateListAdapter(val context: Context, val items: ArrayList<SharedViewModel
             binding.addButtonNew.setOnClickListener {
                 itemClickListener?.onItemClick(items[adapterPosition])
             }
+
+            binding.outfitBtn.setOnClickListener {
+                val fragment = OutfitFragment()
+                val fragmentManager = (binding.root.context as Fragment).parentFragmentManager
+                val fragmentTransaction = fragmentManager.beginTransaction()
+                fragmentTransaction.replace(R.id.frag_container, fragment)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+            }
         }
+
+
     }
     fun moveItem(oldPos:Int, newPos:Int){
         val item = items[oldPos]
@@ -74,6 +88,10 @@ class DateListAdapter(val context: Context, val items: ArrayList<SharedViewModel
 
         // 날짜와 요일을 출력
         holder.binding.dateTextView.text = "•${item.date} ($firstLetterOfDay)"
+
+        holder.binding.outfitBtn.setOnClickListener{
+            itemClickListener?.onOutfitClick(item)
+        }
     }
 }
 
