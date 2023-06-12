@@ -48,6 +48,7 @@ class DateListFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getWeather()
         init()
         initRecyclerView()
         initBackStack()
@@ -60,7 +61,9 @@ class DateListFragment : Fragment() {
     private fun init(){
         result  = "weather"
         binding.weatherLayout.setOnClickListener {
-            showWeatherDialog()
+
+
+                showWeatherDialog()
         }
         binding.exchangeLayout.setOnClickListener {
             val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
@@ -102,10 +105,11 @@ class DateListFragment : Fragment() {
                 val tempDo = (Math.round((tempK.getDouble("temp")-273.15)*100)/100.0)
                 weather = weather + tempDo + "°C"
                 //binding.result.text = weather
-                result = country.name+weather
+                result = weather
 
             },
             {
+                Log.i("weahter",it.message.toString())
                 result = "error"
             })
 
