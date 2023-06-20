@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.travelday_2.databinding.FragmentDailyAddBinding
+import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
 class DailyScheduleAddFragment : Fragment() {
@@ -52,20 +53,19 @@ class DailyScheduleAddFragment : Fragment() {
                 //토스트메시지
                 val msg = "$selectedHour:${String.format("%02d", selectedMinute)} ${taskEditText.text} 추가되었습니다"
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-
+                val userId = FirebaseAuth.getInstance().currentUser?.uid!!
 
                 val task = taskEditText.text.toString()
-                val selectedCountry = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
-                val selectedDate = arguments?.getSerializable("클릭된 날짜") as SharedViewModel.Date
-                val countryList = sharedViewModel.countryList.value
-                val countryIndex = countryList?.indexOf(selectedCountry)
-                val dateIndex = selectedCountry.dateList.indexOf(selectedDate)
-
-                if (countryIndex != null && dateIndex != -1) {
-                    val scheduleCount = sharedViewModel.getScheduleCount(countryIndex, dateIndex)
-                    val color = colors[scheduleCount % colors.size]
-                    sharedViewModel.addDailySchedule(countryIndex, dateIndex, selectedHour, selectedMinute, task, color)
+                val selectedCountry = arguments?.getString("클릭된 국가")
+                val selectedDate = arguments?.getString("클릭된 날짜")
+                val selectedTime = "${String.format("%02d", selectedHour)}:${String.format("%02d", selectedMinute)}"
+                if (selectedCountry != null && selectedDate!=null) {
+                    DBRef.writeDataToDatabase(userId,selectedCountry,selectedDate,selectedTime,task,colors[0])
                 }
+                else{
+                    Toast.makeText(context,"널타입의 데이터를 받았습니다",Toast.LENGTH_SHORT).show()
+                }
+                //나중에 색깔 구현
                 parentFragmentManager.popBackStack()
             }
 

@@ -11,7 +11,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 
 class DailyScheduleAdapter(
-    private val dailyItems: ArrayList<DailyItem>
+    val dailyItems: ArrayList<DailyItem>
 ) : RecyclerView.Adapter<DailyScheduleAdapter.ViewHolder>() {
 
     interface OnItemClickListener {
@@ -44,5 +44,10 @@ class DailyScheduleAdapter(
 
     override fun getItemCount(): Int {
         return dailyItems.size
+    }
+    fun updateItems(newItems: ArrayList<DailyItem>) {
+        dailyItems.clear()
+        dailyItems.addAll(newItems)
+        notifyDataSetChanged()
     }
 }

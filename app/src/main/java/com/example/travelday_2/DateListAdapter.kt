@@ -1,13 +1,18 @@
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.travelday_2.DBRef
 import com.example.travelday_2.DailyItem
 import com.example.travelday_2.OutfitFragment
 import com.example.travelday_2.R
 import com.example.travelday_2.databinding.DateListRowBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.TextStyle
@@ -20,8 +25,7 @@ class DateListAdapter(
     private val country: String,
     val items: ArrayList<String>
 ) : RecyclerView.Adapter<DateListAdapter.ViewHolder>() {
-    val list1 = items
-    private val dailyList = ArrayList<DailyItem>(items.size)
+    var dailyList = ArrayList<DailyItem>()
 
     interface OnItemClickListener {
         fun onItemClick(data: String)
@@ -48,14 +52,30 @@ class DateListAdapter(
         }
 
         fun bind(date: String) {
-
-
-
             val adapter = DailyScheduleAdapter(dailyList)
             binding.innerRecyclerview.adapter = adapter
             binding.innerRecyclerview.layoutManager = LinearLayoutManager(context)
+            getDailyItems(userId, country, date, adapter)
         }
     }
+    private fun getDailyItems(userId: String, country: String, date: String, adapter: DailyScheduleAdapter) {
+        val dailyItemsRef = DBRef.userRef.child(userId).child(country).child(date).child("tasklist")
+        dailyItemsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val updatedDailyItems = ArrayList<DailyItem>()
+                snapshot.children.forEach { dailyItemSnapshot ->
+                    val dailyItem = dailyItemSnapshot.getValue(DailyItem::class.java)
+                    dailyItem?.let { updatedDailyItems.add(it) }
+                }
+                adapter.updateItems(updatedDailyItems)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error here
+            }
+        })
+    }
+
 
     fun moveItem(oldPos: Int, newPos: Int) {
         val item = items[oldPos]
