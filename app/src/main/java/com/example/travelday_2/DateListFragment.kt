@@ -91,7 +91,7 @@ class DateListFragment : Fragment() {
     private fun getWeather(){
         val country = arguments?.getString("클릭된 국가")
         val requestQueue = Volley.newRequestQueue(requireContext())
-        val url = "http://api.openweathermap.org/data/2.5/weather?q="+country+"&appid="+"d74c3bbee7a3c497383271ff0d494542" //이 부분 데이터베이스에 접근하여
+        val url = "http://api.openweathermap.org/data/2.5/weather?q="+country+"&appid="+"d74c3bbee7a3c497383271ff0d494542"
 
         val stringRequest = StringRequest(
             Request.Method.GET,url,

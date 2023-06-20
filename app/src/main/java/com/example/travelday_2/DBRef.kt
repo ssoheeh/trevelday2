@@ -23,7 +23,7 @@ class DBRef {
         }
 
         fun writeDataToDatabase(userId: String, country: String, date: String, time: String, task: String, color: String) {
-            val taskRef = userRef.child(userId).child(country).child(date).child("dailySchedule").child("tasklist").push()
+            val taskRef = userRef.child(userId).child(country).child(date).child("tasklist").push()
             taskRef.child("time").setValue(time)
             taskRef.child("task").setValue(task)
             taskRef.child("color").setValue(color)
