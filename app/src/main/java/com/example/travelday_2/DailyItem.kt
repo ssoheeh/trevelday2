@@ -1,5 +1,7 @@
 package com.example.travelday_2
 
-data class DailyItem(var hour:Int, var activity:String):java.io.Serializable {
-
-}
+data class DailyItem(
+    val time: String = "시간",
+    val task: String = "할일",
+    val color: String = "#FFFFFF"
+)

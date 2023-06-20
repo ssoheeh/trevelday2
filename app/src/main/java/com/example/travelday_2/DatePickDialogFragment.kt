@@ -8,16 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.activityViewModels
 import com.example.travelday_2.databinding.FragmentDatePickDialogBinding
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class DatePickDialogFragment : Fragment() {
     lateinit var binding:FragmentDatePickDialogBinding
-    private val sharedViewModel: SharedViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -44,7 +42,6 @@ class DatePickDialogFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
-
     private fun showDataRangePicker() {
         val selectedCountry=arguments?.getString("country")
 
@@ -60,39 +57,67 @@ class DatePickDialogFragment : Fragment() {
         )
 
         dateRangePicker.addOnPositiveButtonClickListener { dateSelected ->
-
             val startDate = dateSelected.first
             val endDate = dateSelected.second
-            val bundle=Bundle().apply {
-                putString("startDate",convertLongToTime(startDate))
-                putString("endDate",convertLongToTime(endDate))
-                putString("country",selectedCountry)
+
+            // Convert Long to Date object
+            val startDateAsDate = Date(startDate)
+            val endDateAsDate = Date(endDate)
+
+            // Get the list of dates between start and end
+            val dates = getDatesBetween(startDateAsDate, endDateAsDate)
+
+            // 데이터베이스에 데이터 저장
+
+            val userId = FirebaseAuth.getInstance().currentUser
+            val uid = userId?.uid
+
+            dates.forEach { date ->
+                if (uid != null) {
+                    DBRef.writeDataToDatabase(uid, selectedCountry!!, date)
+                }
             }
-            val traveladdFragment=TravelListFragment().apply {
+            val bundle=Bundle().apply {
+                putStringArrayList("DateList",dates)
+                putString("클릭된 국가",selectedCountry)
+            }
+            val travelListFragment=TravelListFragment().apply {
                 arguments=bundle
             }
             parentFragmentManager.beginTransaction().apply {
-                add(R.id.frag_container,traveladdFragment)
+                add(R.id.frag_container,travelListFragment)
                 hide(this@DatePickDialogFragment)
-                show(traveladdFragment)
+                show(travelListFragment)
                 commit()
             }
-
         }
-        //dialog 창이 취소버튼으로 닫힐 시 입력받을 때까지 다시 뜨게 구현
+
         dateRangePicker.addOnNegativeButtonClickListener {
             Handler(Looper.getMainLooper()).postDelayed({
                 showDataRangePicker()
             }, 500) // Wait for 500 milliseconds
         }
-
     }
     private fun convertLongToTime(time: Long): String {
         val date = Date(time)
-        val format = SimpleDateFormat(
-            "yyyy.MM.dd",
-            Locale.getDefault())
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())  // '.' 대신에 '-'를 사용하였습니다.
         return format.format(date)
+    }
+
+
+    private fun getDatesBetween(startDate: Date, endDate: Date): ArrayList<String> {
+        val dateList = arrayListOf<String>()
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        while (calendar.time.before(endDate) || calendar.time.equals(endDate)) {
+            val result = calendar.time
+            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val formattedDate = format.format(result)
+            dateList.add(formattedDate)
+            calendar.add(Calendar.DATE, 1)
+        }
+        return dateList
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.travelday_2
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,14 +13,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.travelday.TravelListAdapter
 import com.example.travelday_2.databinding.FragmentTraveladdBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class TravelListFragment : Fragment() {
     lateinit var binding:FragmentTraveladdBinding
     lateinit var adapter: TravelListAdapter
     private val sharedViewModel: SharedViewModel by activityViewModels()
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid
     private val currentDate: Date = Date()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +40,6 @@ class TravelListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         initButton()
-        setBundle()
     }
 
 
@@ -42,35 +48,15 @@ class TravelListFragment : Fragment() {
         val diff = date.time - currentDate.time
         return (diff / (24 * 60 * 60 * 1000)).toInt()
     }
-    private fun setBundle() {
-        val startDate = arguments?.getString("startDate")
 
-        val endDate = arguments?.getString("endDate")
-        val selectedCountry = arguments?.getString("country")
-
-        if (selectedCountry != null) {
-            Log.i("체크",selectedCountry)
-        }
-        if (selectedCountry != null && startDate != null && endDate != null) {
-            sharedViewModel.addCountry(selectedCountry)
-
-            val selectedCountryIndex = sharedViewModel.countryList.value?.indexOfFirst { it.name == selectedCountry } ?: -1
-            val startDateObj = convertStringToDate(startDate)
-            val endDateObj = convertStringToDate(endDate)
-            getDatesBetween(startDateObj, endDateObj, selectedCountryIndex)
-            val dDay= calculateDday(startDateObj).toString()
-            sharedViewModel.addDDay(selectedCountryIndex,dDay)
-        }
-        adapter.notifyDataSetChanged()
-        }
 
 
 
     private fun initButton() {
         binding.addTripButton.setOnClickListener {
-            val CountryFragment=CountryFragment()
+            val countryFragment=CountryFragment()
             parentFragmentManager.beginTransaction().apply{
-                add(R.id.frag_container,CountryFragment)
+                add(R.id.frag_container,countryFragment)
                 hide(this@TravelListFragment)
                 commit()
             }
@@ -78,18 +64,34 @@ class TravelListFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        adapter = TravelListAdapter(sharedViewModel.countryList.value ?: arrayListOf())
+        adapter = TravelListAdapter(arrayListOf())
         binding.recyclerView.layoutManager = LinearLayoutManager(
             context,
             LinearLayoutManager.VERTICAL, false
         )
         binding.recyclerView.adapter = adapter
+        if (userId != null) {
+            DBRef.userRef.child(userId).addValueEventListener(object: ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val countryList = ArrayList<String>()
+                    for (countrySnapshot in snapshot.children) {
+                        countryList.add(countrySnapshot.key.toString())
+                    }
+                    adapter.setData(countryList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("Firebase", "Failed to read value.", error.toException())
+                }
+            })
+        }
+
+
+
         adapter.itemClickListener = object : TravelListAdapter.OnItemClickListener {
-            override fun OnItemClick(data: SharedViewModel.Country) {
-                val selectedCountry = arguments?.getString("country")
-                val selectedCountryIndex = sharedViewModel.countryList.value?.indexOfFirst { it.name == selectedCountry } ?: -1
+            override fun OnItemClick(data: String) {
                 val bundle = Bundle().apply {
-                    putSerializable("클릭된 국가", sharedViewModel.countryList.value?.get(selectedCountryIndex))
+                    putString("클릭된 국가", data)
                 }
                 val dateListFragment = DateListFragment().apply {
                     arguments = bundle

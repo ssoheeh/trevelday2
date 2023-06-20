@@ -23,12 +23,11 @@ class TravelListParentFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initLayout()
     }
-
     @SuppressLint("SuspiciousIndentation")
     fun initLayout() {
-        val travelList = TravelListFragment()
+        val communityLoginFragment = CommunityLoginFragment()
             childFragmentManager.beginTransaction()
-                .add(R.id.frag_container, travelList)
+                .add(R.id.frag_container, communityLoginFragment)
                 .commit()
         }
     }

@@ -2,16 +2,13 @@ package com.example.travelday
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.example.travelday_2.SharedViewModel
 import com.example.travelday_2.databinding.TravelListRowBinding
 
-
-class TravelListAdapter(val items: ArrayList<SharedViewModel.Country>) :RecyclerView.Adapter<TravelListAdapter.ViewHolder>() {
+class TravelListAdapter(val items: ArrayList<String>) :RecyclerView.Adapter<TravelListAdapter.ViewHolder>() {
 
     interface OnItemClickListener{
-        fun OnItemClick(data: SharedViewModel.Country)
+        fun OnItemClick(data: String)
     }
     var itemClickListener:OnItemClickListener?=null
     inner class ViewHolder(val binding: TravelListRowBinding) : RecyclerView.ViewHolder(binding.root){
@@ -19,7 +16,6 @@ class TravelListAdapter(val items: ArrayList<SharedViewModel.Country>) :Recycler
             binding.textView.setOnClickListener{
                 itemClickListener?.OnItemClick(items[adapterPosition])
             }
-
         }
     }
     fun moveItem(oldPos:Int, newPos:Int){
@@ -44,17 +40,13 @@ class TravelListAdapter(val items: ArrayList<SharedViewModel.Country>) :Recycler
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        val startDate = item.dateList.firstOrNull()?.date
-        val endDate = item.dateList.lastOrNull()?.date
-        val travelPeriod = if (startDate != null && endDate != null) {
-            "$startDate ~ $endDate"
-        } else {
-            ""
-        }
-        holder.binding.textView.text = item.name +"\n" +travelPeriod
-        holder.binding.dDay.text="D-"+item.dDay
+        holder.binding.textView.text = item
+        holder.binding.dDay.text=""  // 나중에 구현
     }
 
-
-
+    fun setData(newData: ArrayList<String>) {
+        items.clear()
+        items.addAll(newData)
+        notifyDataSetChanged()
+    }
 }

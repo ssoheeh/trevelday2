@@ -1,5 +1,7 @@
 package com.example.travelday_2
 
+import DailyScheduleAdapter
+import DateListAdapter
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
@@ -18,6 +20,12 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.travelday_2.databinding.FragmentDateListBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
@@ -33,11 +41,13 @@ import java.net.URL
 
 
 class DateListFragment : Fragment() {
-    lateinit var binding:FragmentDateListBinding
-    lateinit var adapter: DateListAdapter
-    private val sharedViewModel: SharedViewModel by activityViewModels()
-    lateinit var result :String
-    val scope = CoroutineScope(Dispatchers.IO)
+    lateinit var binding: FragmentDateListBinding
+    lateinit var result: String
+    private val dates = ArrayList<String>()
+    private lateinit var adapter: DateListAdapter
+    lateinit var country:String
+    lateinit var userId:String
+    private val dailyScheduleAdapters = ArrayList<DailyScheduleAdapter>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,24 +62,18 @@ class DateListFragment : Fragment() {
         init()
         initRecyclerView()
         initBackStack()
-        //관찰
-        sharedViewModel.countryList.observe(viewLifecycleOwner) { countryList ->
-            adapter.notifyDataSetChanged()
-        }
+
     }
     //환율 버튼과 날씨 버튼 눌렀을 때 구현
     private fun init(){
         result  = "weather"
         binding.weatherLayout.setOnClickListener {
-
-
                 showWeatherDialog()
         }
         binding.exchangeLayout.setOnClickListener {
-            val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
+            val country = arguments?.getString("클릭된 국가")
             val bundle = Bundle().apply {
-                putSerializable("클릭된 국가", country)
-
+                putString("클릭된 국가", country)
             }
 
             val exchangeFragment=ExchangeRateFragment().apply {
@@ -85,9 +89,9 @@ class DateListFragment : Fragment() {
     }
 
     private fun getWeather(){
-        val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
+        val country = arguments?.getString("클릭된 국가")
         val requestQueue = Volley.newRequestQueue(requireContext())
-        val url = "http://api.openweathermap.org/data/2.5/weather?q="+country.name+"&appid="+"d74c3bbee7a3c497383271ff0d494542"
+        val url = "http://api.openweathermap.org/data/2.5/weather?q="+country+"&appid="+"d74c3bbee7a3c497383271ff0d494542" //이 부분 데이터베이스에 접근하여
 
         val stringRequest = StringRequest(
             Request.Method.GET,url,
@@ -121,11 +125,11 @@ class DateListFragment : Fragment() {
         getWeather()
         //val dialogView = LayoutInflater.from(context).inflate(R.layout.fragment_date_list, null)
 
-        val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
+        val country = arguments?.getString("클릭된 국가")
 
         val dialogBuilder = AlertDialog.Builder(requireContext())
 
-            .setTitle(country.name)
+            .setTitle(country)
             .setMessage(result)
             .setPositiveButton("확인", null)
             .setNegativeButton("취소") { dialog, _ ->
@@ -151,68 +155,100 @@ class DateListFragment : Fragment() {
 
     @SuppressLint("SuspiciousIndentation", "SetTextI18n")
     private fun initRecyclerView() {
-        val country = arguments?.getSerializable("클릭된 국가") as SharedViewModel.Country
-        if (country != null) {
-                adapter = DateListAdapter(requireContext(), country.dateList)
-                binding.recyclerView.adapter = adapter
-                binding.recyclerView.layoutManager = LinearLayoutManager(context,
-                    LinearLayoutManager.VERTICAL,false)}
-                adapter.itemClickListener=object:DateListAdapter.OnItemClickListener{
-                    override fun onItemClick(data: SharedViewModel.Date) {
-                        val bundle = Bundle().apply {
-                            putSerializable("클릭된 국가", country)
-                            putSerializable("클릭된 날짜", data)
-                        }
-                        val dailyScheduleAddFragment=DailyScheduleAddFragment().apply {
-                            arguments=bundle
-                        }
-                        parentFragmentManager.beginTransaction().apply {
-                            add(R.id.frag_container, dailyScheduleAddFragment)
-                            hide(this@DateListFragment)
-                            addToBackStack(null)
-                            commit()
-                        }
+        userId = FirebaseAuth.getInstance().currentUser?.uid!!
+        country = arguments?.getString("클릭된 국가")!!
+
+        if (country != null && userId != null) {
+            adapter = DateListAdapter(requireContext(), userId!!, country!!, ArrayList())
+            binding.recyclerView.adapter = adapter
+            binding.recyclerView.layoutManager = LinearLayoutManager(context,
+                LinearLayoutManager.VERTICAL,false)
+            getEvent()
+
+        }
+            adapter.itemClickListener = object : DateListAdapter.OnItemClickListener {
+                override fun onItemClick(data: String) {
+                    val bundle = Bundle().apply {
+                        putString("클릭된 국가", country)
+                        putString("클릭된 날짜", data)
                     }
 
-                    override fun onOutfitClick(data: SharedViewModel.Date) {
-                        val fragment = OutfitFragment()
-                        val fragmentManager = parentFragmentManager
-                        val fragmentTransaction = fragmentManager.beginTransaction()
-                        fragmentTransaction.replace(R.id.frag_container, fragment)
-                        fragmentTransaction.addToBackStack(null)
-                        fragmentTransaction.commit()
+                    val dailyScheduleAddFragment = DailyScheduleAddFragment().apply {
+                        arguments = bundle
+                    }
+
+                    parentFragmentManager.beginTransaction().apply {
+                        add(R.id.frag_container, dailyScheduleAddFragment)
+                        hide(this@DateListFragment)
+                        addToBackStack(null)
+                        commit()
                     }
                 }
-        //상단 탭에 국가이름, 날짜 데이터 및 디데이 표시
-        val startDate = country.dateList.firstOrNull()?.date
-        val endDate = country.dateList.lastOrNull()?.date
-        val travelPeriod = if (startDate != null && endDate != null) {
-            "$startDate ~ $endDate"
-        } else {
-            ""
-        }
-        binding.travelData.text=country.name +"\n " +travelPeriod
-        binding.dDayDateList.text="D-"+country.dDay
 
-       // swipe 시 remove기능 구현
-        val simpleCallback=object: ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT){
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                adapter.moveItem(viewHolder.adapterPosition, target.adapterPosition)
-                return true
+                override fun onOutfitClick(data: String) {
+                    val fragment = OutfitFragment()
+                    val fragmentManager = parentFragmentManager
+                    val fragmentTransaction = fragmentManager.beginTransaction()
+                    fragmentTransaction.replace(R.id.frag_container, fragment)
+                    fragmentTransaction.addToBackStack(null)
+                    fragmentTransaction.commit()
+                }
             }
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                adapter.removeItem(viewHolder.adapterPosition)
+
+            val simpleCallback = object : ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT
+            ) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    adapter.moveItem(viewHolder.adapterPosition, target.adapterPosition)
+                    return true
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    adapter.removeItem(viewHolder.adapterPosition)
+                }
             }
+            val itemTouchHelper = ItemTouchHelper(simpleCallback)
+            itemTouchHelper.attachToRecyclerView(binding.recyclerView)
         }
-        val itemTouchHelper= ItemTouchHelper(simpleCallback)
-        itemTouchHelper.attachToRecyclerView(binding.recyclerView)
+
+    private fun getEvent() {
+        val dateRef = DBRef.userRef.child(userId!!).child(country!!)
+        dateRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val updatedDates = ArrayList<String>()
+                snapshot.children.forEach { dateSnapshot ->
+                    val date = dateSnapshot.key
+                    date?.let { updatedDates.add(it) }
+                }
+                adapter.items.clear()
+                adapter.items.addAll(updatedDates)
+
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error here
+            }
+        })
+
     }
 }
 
+
+
+////상단 탭에 국가이름, 날짜 데이터 및 디데이 표시
+//val startDate = country.dateList.firstOrNull()?.date
+//val endDate = country.dateList.lastOrNull()?.date
+//val travelPeriod = if (startDate != null && endDate != null) {
+//    "$startDate ~ $endDate"
+//} else {
+//    ""
+//}
+//binding.travelData.text=country.name +"\n " +travelPeriod
+//binding.dDayDateList.text="D-"+country.dDay
 
 

@@ -46,10 +46,9 @@ class CommunityLoginFragment : Fragment() {
                         Log.i("유저이름",user.toString())
                         Toast.makeText(context,"로그인이 완료되었습니다",Toast.LENGTH_SHORT).show()
                         parentFragmentManager.beginTransaction().apply {
-                            val communityMainFragment=CommunityMainFragment()
-                            add(R.id.frag_container_community, communityMainFragment)
+                            val travelListFragment=TravelListFragment()
+                            add(R.id.frag_container, travelListFragment)
                             hide(this@CommunityLoginFragment)
-                            addToBackStack(null)
                             commit()
                         }
 

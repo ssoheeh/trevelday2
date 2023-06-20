@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
+import com.google.firebase.auth.FirebaseAuth
 
 
 class CountryFragment : DialogFragment() {
@@ -44,6 +45,14 @@ class CountryFragment : DialogFragment() {
                 selectedCountry = countryName
                 val bundle = Bundle()
                 bundle.putString("country", selectedCountry)
+
+                // 여기에서 Firebase에 데이터를 저장
+                val userId = FirebaseAuth.getInstance().currentUser
+                val uid = userId?.uid
+                if (uid != null) {
+                    DBRef.writeDataToDatabase(uid, selectedCountry)
+                }
+
                 val datePickDialogFragment=DatePickDialogFragment()
                 datePickDialogFragment.arguments = bundle
                 parentFragmentManager.beginTransaction().apply {

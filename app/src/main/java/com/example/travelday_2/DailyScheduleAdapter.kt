@@ -1,61 +1,48 @@
-package com.example.travelday_2
-
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.travelday_2.DBRef
+import com.example.travelday_2.DailyItem
 import com.example.travelday_2.databinding.DailyListRowBinding
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
-class DailyScheduleAdapter(var dailyList:ArrayList<SharedViewModel.DailySchedule>) : RecyclerView.Adapter<DailyScheduleAdapter.ViewHolder>() {
+class DailyScheduleAdapter(
+    private val dailyItems: ArrayList<DailyItem>
+) : RecyclerView.Adapter<DailyScheduleAdapter.ViewHolder>() {
 
-    interface OnItemClickListener{
-        fun OnItemClick(data:SharedViewModel.DailySchedule)
+    interface OnItemClickListener {
+        fun onItemClick(data: DailyItem)
     }
-    var itemClickListener:OnItemClickListener?=null
-    inner class ViewHolder(val binding: DailyListRowBinding) : RecyclerView.ViewHolder(binding.root){
-        init{
-            binding.scheduleTextView.setOnClickListener{
-                itemClickListener?.OnItemClick(dailyList[adapterPosition])
 
+    var itemClickListener: OnItemClickListener? = null
+
+    inner class ViewHolder(val binding: DailyListRowBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.scheduleTextView.setOnClickListener {
+                itemClickListener?.onItemClick(dailyItems[adapterPosition])
             }
-
         }
-
-    }
-    fun moveItem(oldPos:Int, newPos:Int){
-        val item = dailyList[oldPos]
-        dailyList.removeAt(oldPos)
-        dailyList.add(newPos,item)
-        notifyItemMoved(oldPos, newPos)
-    }
-    fun removeItem(pos:Int){
-        dailyList.removeAt(pos)
-        notifyItemRemoved(pos)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = DailyListRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-        return ViewHolder(view)
-
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = DailyListRowBinding.inflate(inflater, parent, false)
+        return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: DailyScheduleAdapter.ViewHolder, position: Int) {
-        val item = dailyList[position]
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault()) //00:00 방식으로 시간표기
-        val time = timeFormat.format(Date().apply { hours = item.hour; minutes = item.minute })
-        holder.binding.timeTextView.text = time
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = dailyItems[position]
+        holder.binding.timeTextView.text = item.time
         holder.binding.scheduleTextView.text = item.task
         holder.binding.colorView.setBackgroundColor(Color.parseColor(item.color))
     }
 
     override fun getItemCount(): Int {
-        return dailyList.size
+        return dailyItems.size
     }
 }
-

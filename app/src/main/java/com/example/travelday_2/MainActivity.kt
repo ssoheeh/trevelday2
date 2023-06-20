@@ -1,5 +1,6 @@
 package com.example.travelday_2
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -20,8 +21,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initTabLayout()
 
-
     }
+
     private fun initTabLayout() {
         val tabCount=3
         val viewPagerAdapter=ViewPagerAdapter(supportFragmentManager, lifecycle, tabCount)
